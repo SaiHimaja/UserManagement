@@ -1,0 +1,96 @@
+# version: '3.9'
+
+# services:
+#   mysql:
+#     image: mysql:8.0
+#     container_name: mysql_db
+#     environment:
+#       MYSQL_ROOT_PASSWORD: Pramsai@123
+#       MYSQL_DATABASE: myapp
+#     ports:
+#       - "3307:3306"
+#     volumes:
+#       - mysql_data:/var/lib/mysql
+#     command: --default-authentication-plugin=mysql_native_password
+
+#   backend:
+#     build: ./demo
+#     container_name: spring_backend
+#     ports:
+#       - "8080:8080"
+#     environment:
+#       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/myapp
+#       SPRING_DATASOURCE_USERNAME: root
+#       SPRING_DATASOURCE_PASSWORD: Pramsai@123
+#     depends_on:
+#       - mysql
+#     restart: unless-stopped
+
+#   frontend:
+#     build: ./my-auth-app
+#     container_name: react_frontend
+#     ports:
+#       - "3000:80"
+#     depends_on:
+#       - backend
+#     restart: unless-stopped
+
+# volumes:
+#   mysql_data:
+
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: myapp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Pramsai@123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"      # AMQP protocol port
+      - "15672:15672"    # Management UI port
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    restart: unless-stopped
+
+  backend:
+    build: ./demo
+    container_name: spring_backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/myapp
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Pramsai@123
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    depends_on:
+      - postgres
+      - rabbitmq
+    restart: unless-stopped
+
+  frontend:
+    build: ./my-auth-app
+    container_name: react_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

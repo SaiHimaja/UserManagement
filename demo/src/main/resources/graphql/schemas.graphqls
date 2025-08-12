@@ -1,0 +1,38 @@
+type User {
+  id: ID
+  name: String
+  email: String
+  phone: String
+  address: String
+  role: String 
+  imageUrl: String    
+}
+
+
+type PagedUsers {
+  users: [User]
+  totalCount: Int
+}
+
+type Query {
+  getAllUsers(page: Int = 0, size: Int = 10, search: String = ""): PagedUsers
+  getAllUsersList: [User]
+}
+
+type Mutation {
+  registerUser(
+    name: String!
+    email: String!
+    password: String
+    phone: String
+    address: String
+  ): User
+
+    registerAdmin(
+    name: String!
+    email: String!
+    password: String!
+    phone: String
+    address: String
+  ): User
+}
