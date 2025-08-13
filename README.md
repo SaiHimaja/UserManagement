@@ -92,15 +92,6 @@ cd backend && mvn spring-boot:run
 cd frontend && npm install && npm start
 ```
 
-## Admin Access
-
-| Service | URL | Username | Password |
-|---------|-----|----------|----------|
-| **Grafana** | http://localhost:3001 | `admin` | `admin` |
-| **Prometheus** | http://localhost:9090 | - | - |
-| **Kibana** | http://localhost:5601 | - | - |
-| **RabbitMQ** | http://localhost:15672 | `guest` | `guest` |
-
 ## Key Features
 
 - 🔐 **Secure Auth** - JWT + Google OAuth + session management
@@ -112,4 +103,4 @@ cd frontend && npm install && npm start
 
 ---
 
-**Enterprise-grade user platform with intelligent AI integration and complete observability**
+**User Management platform with intelligent AI integration and complete observability**
