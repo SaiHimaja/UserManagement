@@ -7,7 +7,7 @@ This is a comprehensive user management platform that seamlessly integrates mode
 ```mermaid
 graph TB
     %% User Layer
-    User[👤 User]
+    User[👤 User/Admin]
     
     %% Frontend Layer
     subgraph "Frontend Layer"
