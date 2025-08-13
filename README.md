@@ -69,8 +69,11 @@ graph TB
 1. **Register/Login** → JWT authentication + Google OAuth
 2. **Profile Setup** → Upload profile picture, update details  
 3. **Dashboard** → Personalized user experience
-4. **AI Chat** → Real-time streaming conversations with OpenAI
-5. **File Management** → Automatic cleanup of unused photos via RabbitMQ
+4. **Profile** → View/Edit details and upload profile photos
+5. **AdminDashboard** → Acces to admin previliges
+7. **AI Chat** → Real-time streaming conversations with OpenAI
+8. **File Management** → Automatic cleanup of unused photos via RabbitMQ
+9. **Metrics and Logging** → View system performance and log details
 
 ## Tech Stack
 
