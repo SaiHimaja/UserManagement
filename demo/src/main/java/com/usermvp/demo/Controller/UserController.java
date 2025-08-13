@@ -35,7 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 @RestController
@@ -87,52 +88,108 @@ public class UserController {
     //     return ResponseEntity.ok(Map.of("message", "User registered successfully"));
     // }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
+//     @PostMapping("/login")
+//     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
 
-        try{
-        String email = credentials.get("email");
-        String password = credentials.get("password");
+//         try{
+//         String email = credentials.get("email");
+//         String password = credentials.get("password");
 
-        Optional<User> userOptional = userService.getUserByEmail(email);
+//         Optional<User> userOptional = userService.getUserByEmail(email);
 
         
 
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            System.out.println("🔍 Logging in user: " + user.getEmail() + " with role: " + user.getRole());
-            if (passwordEncoder.matches(password, user.getPassword())) {
-                String token = jwtUtil.generateToken(email);
-                return ResponseEntity.ok(Map.of(
-                        "token", token,
-                        "email", user.getEmail(),
-                        "name", user.getName(),
-                        "role", user.getRole()
+//         if (userOptional.isPresent()) {
+//             User user = userOptional.get();
+//             System.out.println("🔍 Logging in user: " + user.getEmail() + " with role: " + user.getRole());
+//             if (passwordEncoder.matches(password, user.getPassword())) {
+//                 String token = jwtUtil.generateToken(email);
+//                 return ResponseEntity.ok(Map.of(
+//                         "token", token,
+//                         "email", user.getEmail(),
+//                         "name", user.getName(),
+//                         "role", user.getRole()
 
-                ));
-            } 
-                else {
-                    // User not found
+//                 ));
+//             } 
+//                 else {
+//                     // User not found
+//                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                             .body(Map.of(
+//                                 "errors", List.of(Map.of("message", "Invalid email or password"))
+//                             ));
+//                 }
+//         }
+//         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//         .body(Map.of(
+//             "errors", List.of(Map.of("message", "Invalid email or password"))
+//         ));
+
+//     }
+//     catch (Exception e) {
+//         e.printStackTrace(); // <- See full error in console
+//         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//         .body(Map.of(
+//             "errors", List.of(Map.of("message", "Login failed: " + e.getMessage()))
+//         ));
+//     }
+// }
+
+
+
+
+
+    private static final Logger logger = LogManager.getLogger(UserController.class);
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
+        logger.info("💡 Login request received for email: {}", credentials.get("email"));
+
+        try {
+            String email = credentials.get("email");
+            String password = credentials.get("password");
+
+            Optional<User> userOptional = userService.getUserByEmail(email);
+
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                logger.info("🔍 Found user: {} with role: {}", user.getEmail(), user.getRole());
+
+                if (passwordEncoder.matches(password, user.getPassword())) {
+                    String token = jwtUtil.generateToken(email);
+                    logger.info("✅ User {} authenticated successfully", user.getEmail());
+
+                    return ResponseEntity.ok(Map.of(
+                            "token", token,
+                            "email", user.getEmail(),
+                            "name", user.getName(),
+                            "role", user.getRole()
+                    ));
+                } else {
+                    logger.warn("⚠️ Authentication failed for {}: Invalid password", email);
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                             .body(Map.of(
                                 "errors", List.of(Map.of("message", "Invalid email or password"))
                             ));
                 }
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-        .body(Map.of(
-            "errors", List.of(Map.of("message", "Invalid email or password"))
-        ));
+            } else {
+                logger.warn("⚠️ Authentication failed: User not found with email {}", email);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of(
+                            "errors", List.of(Map.of("message", "Invalid email or password"))
+                        ));
+            }
 
+        } catch (Exception e) {
+            logger.error("❌ Login failed for email {}: {}", credentials.get("email"), e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                        "errors", List.of(Map.of("message", "Login failed: " + e.getMessage()))
+                    ));
+        }
     }
-    catch (Exception e) {
-        e.printStackTrace(); // <- See full error in console
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(Map.of(
-            "errors", List.of(Map.of("message", "Login failed: " + e.getMessage()))
-        ));
-    }
-}
+
+
 @GetMapping("/dashboard")
 public ResponseEntity<Map<String, String>> dashboard(Authentication authentication) {
     try {

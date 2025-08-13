@@ -1,0 +1,13 @@
+# logstash/config/logstash.yml
+
+# Listen on all network interfaces inside container
+http.host: "0.0.0.0"
+
+# Disable X-Pack monitoring (optional for simple local setup)
+xpack.monitoring.enabled: false
+
+# Path for Logstash data (optional)
+path.data: /usr/share/logstash/data
+
+# Path for logs inside the container (optional)
+path.logs: /usr/share/logstash/logs
